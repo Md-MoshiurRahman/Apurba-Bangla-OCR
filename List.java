@@ -105,8 +105,8 @@ public class List {
 //    public static HashMap<String, ParagraphAlignment> regionIdToAlignment = new HashMap<>();    
     public static String callBackURL = "";
     public static String callBackFileName = "";
-    public static String pageName = "79";
-    public static String jsonPath = "79.xml";
+    public static String pageName = "80";
+    public static String jsonPath = "80.xml";
 //        String imagePath = "1.png";
 //    public static String bookPath = "/home/alamgir/Desktop/";
 //    public static String outPath = "/home/alamgir/Desktop/output";
@@ -204,14 +204,14 @@ public class List {
 
                                 double width = maxX - minX;
                                 double height = maxY - minY;
-                                textPoints.put(pointArray, text.getValue().trim());
+                                /*textPoints.put(pointArray, text.getValue().trim());
                                 avgWordWidth += width;
-                                avgWordHeight += height;
-                                /*if (width >= 15 && width <= 300 && height <= 70.0 && height >= 15) {
+                                avgWordHeight += height;*/
+                                if (width >= 15 && height >= 15) {
                                     textPoints.put(pointArray, text.getValue().trim());
                                     avgWordWidth += width;
                                     avgWordHeight += height;
-                                }*/
+                                }
                                 //textPoints.put(pointArray, text.getValue().trim());
                                 //out.write("minnx " + minnY + " maxxX " + maxxY + " text " + text.getValue().trim() + "\n");
                             }
@@ -288,12 +288,8 @@ public class List {
         CTFonts fonts = CTFonts.Factory.newInstance();
         fonts.setAscii("Tanmatra Internet");
         styles.setDefaultFonts(fonts);
-        /*XWPFParagraph paragraph = document.createParagraph();
-        XWPFRun run = paragraph.createRun();
-        run.setFontFamily("SolaimanLipi");
-        run.setFontSize(10);*/
 
- /*if (avgStartGap <= 2 && avgEndGap >= 100) {
+        /*if (avgStartGap <= 2 && avgEndGap >= 100) {
             for (Point[] point : sortedKeyPoints) {
                 run.setText(textPoints.get(point).trim());
                 run.addBreak();
@@ -313,7 +309,7 @@ public class List {
                             "Two",
                             "Three"
                         }));*/
-        CTAbstractNum cTAbstractNum = CTAbstractNum.Factory.newInstance();
+ /*CTAbstractNum cTAbstractNum = CTAbstractNum.Factory.newInstance();
         //Next we set the AbstractNumId. This requires care. 
         //Since we are in a new document we can start numbering from 0. 
         //But if we have an existing document, we must determine the next free number first.
@@ -326,17 +322,17 @@ public class List {
         cTLvl.addNewLvlText().setVal("•");*/
         //cTLvl.addNewLvlText().setVal("");
         ///* Decimal list
-        CTLvl cTLvl = cTAbstractNum.addNewLvl();
+        /*CTLvl cTLvl = cTAbstractNum.addNewLvl();
         cTLvl.addNewNumFmt().setVal(STNumberFormat.DECIMAL);
-        cTLvl.addNewLvlText().setVal("%1.");
+        cTLvl.addNewLvlText().setVal("%1)");
         cTLvl.addNewStart().setVal(BigInteger.valueOf(1));
 
         XWPFAbstractNum abstractNum = new XWPFAbstractNum(cTAbstractNum);
         XWPFNumbering numbering = document.createNumbering();
         BigInteger abstractNumID = numbering.addAbstractNum(abstractNum);
-        BigInteger numID = numbering.addNum(abstractNumID);
+        BigInteger numID = numbering.addNum(abstractNumID);*/
 
-        /*for (String string : texts) {
+ /*for (String string : texts) {
             paragraph = document.createParagraph();
             paragraph.setNumID(numID);
             run = paragraph.createRun();
@@ -344,19 +340,120 @@ public class List {
             run.setFontSize(10);
             run.setText(string);
         }*/
-        if (avgStartGap <= 170 && avgEndGap >= 200) {
+        if (avgStartGap <= 170 && avgEndGap >= 140) {
+            CTAbstractNum cTAbstractNum = CTAbstractNum.Factory.newInstance();
+            //Next we set the AbstractNumId. This requires care. 
+            //Since we are in a new document we can start numbering from 0. 
+            //But if we have an existing document, we must determine the next free number first.
+            cTAbstractNum.setAbstractNumId(BigInteger.valueOf(0));
+            char[] banglaDigits = {'?', '?', '?', '?', '?', '?', '?', '?', '?', '?'};
+
+            ///*Bullet list
+            /*CTLvl cTLvl = cTAbstractNum.addNewLvl();
+        cTLvl.addNewNumFmt().setVal(STNumberFormat.BULLET);
+        cTLvl.addNewLvlText().setVal("•");*/
+            //cTLvl.addNewLvlText().setVal("");
+            ///* Decimal list
+            CTLvl cTLvl = cTAbstractNum.addNewLvl();
+            cTLvl.addNewNumFmt().setVal(STNumberFormat.DECIMAL);
+            cTLvl.addNewLvlText().setVal("%1.");
+            for (int i = 0; i < sortedKeyPoints.size(); i++) {
+                Point[] point = sortedKeyPoints.get(i);
+                String[] words = textPoints.get(point).trim().split(" ", 2);
+                String firstWord = words[0];
+                char firstChar = firstWord.charAt(0);
+                char lastChar = firstWord.charAt(firstWord.length()-1);
+                if(Character.getNumericValue(firstChar) != -1 && lastChar == ')'){
+                    cTLvl.addNewLvlText().setVal("%1)");
+                    break;
+                }
+                if(Character.getNumericValue(firstChar) != -1 && lastChar == '|'){
+                    cTLvl.addNewLvlText().setVal("%1|");
+                    break;
+                }
+            }
+
+            //cTLvl.addNewLvlText().setVal("%1)");
+            cTLvl.addNewStart().setVal(BigInteger.valueOf(1));
+
+            XWPFAbstractNum abstractNum = new XWPFAbstractNum(cTAbstractNum);
+            XWPFNumbering numbering = document.createNumbering();
+            BigInteger abstractNumID = numbering.addAbstractNum(abstractNum);
+            BigInteger numID = numbering.addNum(abstractNumID);
+
             createWordRect(textPoints);
+
+            int start = 1;
             Point[] prevPoint = sortedKeyPoints.get(0);
-            String s = textPoints.get(prevPoint).trim();
-            for (int i = 1; i < sortedKeyPoints.size(); i++) {
+            String s = "";
+
+            String[] words = textPoints.get(prevPoint).trim().split(" ", 2);
+            String firstWord = words[0];
+            char firstChar = firstWord.charAt(0);
+
+            if (prevPoint[0].getX() - min > 10 || Character.getNumericValue(firstChar) == -1) {
+                paragraph = document.createParagraph();
+                if (prevPoint[0].getX() - min > 100) {
+                    paragraph.setAlignment(ParagraphAlignment.CENTER);
+                } else {
+                    paragraph.setAlignment(ParagraphAlignment.LEFT);
+                }
+                run = paragraph.createRun();
+                run.setFontFamily("SolaimanLipi");
+                run.setFontSize(10);
+                s = textPoints.get(prevPoint).trim();
+                run.setText(s);
+
+                prevPoint = sortedKeyPoints.get(start);
+                words = textPoints.get(prevPoint).trim().split(" ", 2);
+                firstWord = words[0];
+                firstChar = firstWord.charAt(0);
+                if (Character.getNumericValue(firstChar) != -1) {
+                    System.out.println(Character.getNumericValue(firstChar));
+                    s = words[1];
+                    //s = textPoints.get(prevPoint).trim();
+                } else {
+                    s = textPoints.get(prevPoint).trim();
+                }
+                start++;
+            } else {
+                if (Character.getNumericValue(firstChar) != -1) {
+                    System.out.println(Character.getNumericValue(firstChar));
+                    s = words[1];
+                    //s = textPoints.get(prevPoint).trim();
+                } else {
+                    s = textPoints.get(prevPoint).trim();
+                }
+            }
+            for (int i = start; i < sortedKeyPoints.size(); i++) {
                 Point[] point = sortedKeyPoints.get(i);
                 if (point[0].getX() - min > 10 && point[0].getY() - prevPoint[0].getY() > 10) {
                     s += "\n";
                     s += "\t";
-                    s += textPoints.get(point).trim();
+
+                    words = textPoints.get(point).trim().split(" ", 2);
+                    firstWord = words[0];
+                    firstChar = firstWord.charAt(0);
+                    if (Character.getNumericValue(firstChar) != -1) {
+                        System.out.println(Character.getNumericValue(firstChar));
+                        s += words[1];
+                        //s += textPoints.get(point).trim();
+                    } else {
+                        s += textPoints.get(point).trim();
+                    }
                 } else if (point[0].getX() - min > 10) {
                     s += " ";
-                    s += textPoints.get(point).trim();
+
+                    words = textPoints.get(point).trim().split(" ", 2);
+                    firstWord = words[0];
+                    firstChar = firstWord.charAt(0);
+                    if (Character.getNumericValue(firstChar) != -1) {
+                        System.out.println(Character.getNumericValue(firstChar));
+                        s += words[1];
+                        //s += textPoints.get(point).trim();
+                    } else {
+                        s += textPoints.get(point).trim();
+                    }
                 } else {
                     paragraph = document.createParagraph();
                     run = paragraph.createRun();
@@ -374,8 +471,16 @@ public class List {
                             }
                         }
                     }
-
-                    s = textPoints.get(point).trim();
+                    words = textPoints.get(point).trim().split(" ", 2);
+                    firstWord = words[0];
+                    firstChar = firstWord.charAt(0);
+                    if (Character.getNumericValue(firstChar) != -1) {
+                        System.out.println(Character.getNumericValue(firstChar));
+                        s = words[1];
+                        //s = textPoints.get(point).trim();
+                    } else {
+                        s = textPoints.get(point).trim();
+                    }
                 }
                 prevPoint = point;
             }
